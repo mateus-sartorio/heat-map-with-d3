@@ -4,8 +4,9 @@ const plotWidth = 1500;
 const plotHeight = 600;
 const padding = 60;
 
-const legendWidth = 1000;
-const legendHeight = 100;
+const legendWidth = 400;
+const legendHeight = 50;
+const legendPadding = 50;
 
 const barColor = "#607EAA";
 const barWidth = 100;
@@ -59,16 +60,23 @@ const plotGraph = (data) => {
 
   const temperatureScale = d3
     .scaleLinear()
-    .domain([
-      2.8,
-      12.8,
-    ])
+    .domain([2.8, 12.8])
     .range([0, colors.length - 1]);
 
-  const legendScale = d3
+  const legendScale1 = d3
     .scaleBand()
-    .domain(colors)
-    .range([0, legendWidth]);
+    .domain(colors.map((_c, i) => i))
+    .range([legendPadding, legendWidth - legendPadding]);
+
+  const legendScale2 = d3
+    .scaleLinear()
+    .domain([0, colors.length - 1])
+    .range([legendPadding, legendWidth - legendPadding]);
+
+  const legendScale3 = d3
+    .scaleLinear()
+    .domain([0, colors.length - 1])
+    .range([2.8, 12.8]);
 
   const svg = d3
     .select("#container")
@@ -94,22 +102,39 @@ const plotGraph = (data) => {
     .attr("data-year", (d) => d.year)
     .attr("data-temp", (d) => baseTemperature + d.variance)
     .on("mouseover", (event, d) => {
+      const rectElement = event.target;
+
+      d3.select(rectElement).attr("stroke", "black").attr("stroke-width", 2);
+
       tooltip
         .attr("data-year", d.year)
         .style("visibility", "visible")
-        .html(`${d.year} - ${monthNames[d.month - 1]}<br>${baseTemperature + d.variance} ℃<br>${d.variance} ℃`)
+        .html(
+          `${d.year} - ${monthNames[d.month - 1]}<br>${
+            baseTemperature + d.variance
+          } ℃<br>${d.variance} ℃`
+        )
         .style("font-family", "sans-serif")
         .style("font-size", "12px")
         .style("left", event.pageX + 20 + "px")
         .style("top", event.pageY - 30 + "px");
     })
-    .on("mouseout", (_d) => {
+    .on("mouseout", (event) => {
+      const rectElement = event.target;
+
+      d3.select(rectElement).attr("stroke", "none");
+
       tooltip.style("visibility", "hidden");
     });
 
-  const xAxis = d3.axisBottom(xScale).ticks(10).tickFormat(d3.format("d"));
+  const xAxis = d3
+    .axisBottom(xScale)
+    .tickValues(years.filter((year, i) => i % 10 === 0))
+    .tickFormat(d3.format("d"));
 
-  const yAxis = d3.axisLeft(yScale).tickFormat((month) => monthNames[month - 1]);
+  const yAxis = d3
+    .axisLeft(yScale)
+    .tickFormat((month) => monthNames[month - 1]);
 
   svg
     .append("g")
@@ -120,13 +145,10 @@ const plotGraph = (data) => {
   svg
     .append("text")
     .attr("text-anchor", "middle")
-    .attr(
-      "transform",
-      `translate(${plotWidth / 2}, ${plotHeight - 20})`
-    )
+    .attr("transform", `translate(${plotWidth / 2}, ${plotHeight - 20})`)
     .style("font-family", "sans-serif")
     .style("font-size", "12px")
-    .text("Years")
+    .text("Years");
 
   svg
     .append("g")
@@ -143,8 +165,7 @@ const plotGraph = (data) => {
     )
     .style("font-family", "sans-serif")
     .style("font-size", "12px")
-    .text("Months")
-
+    .text("Months");
 
   const legend = d3
     .select("#legend")
@@ -157,14 +178,29 @@ const plotGraph = (data) => {
     .data(colors)
     .enter()
     .append("rect")
-    .attr("x", (d, i) => i*50)
+    .attr("x", (_d, i) => legendScale1(i))
     .attr("y", 0)
-    .attr("width", 50)
-    .attr("height", 50 )
-    .attr(
-      "fill",
-      (d) => d
-    )
+    .attr("width", legendScale1.bandwidth())
+    .attr("height", 30)
+    .attr("fill", (d) => d);
+
+  const legendAxis = d3
+    .axisBottom(legendScale2)
+    .tickValues(d3.range(0, colors.length))
+    .tickFormat((d) => legendScale3(d).toFixed(1));
+
+  legend
+    .append("g")
+    .attr("id", "legend-axis-axis")
+    .attr("transform", `translate(0, ${30})`)
+    .call(legendAxis);
+
+  legend
+    .append("text")
+    .attr("text-anchor", "middle")
+    .style("font-family", "sans-serif")
+    .style("font-size", "12px")
+    .text("Years");
 };
 
 const getData = (url) => {

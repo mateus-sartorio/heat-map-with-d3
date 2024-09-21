@@ -32,7 +32,10 @@ h2 {
 }
 
 #legend {
-  border: 2px solid blue;
+  width: fit-content;
+  margin: auto auto;
+  display: flex;
+  justify-content: center;
 }
 
 #tooltip {
