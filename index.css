@@ -32,43 +32,7 @@ h2 {
 }
 
 #legend {
-  position: absolute;
-  right: 60px;
-  top: 60px;
-  margin: 0;
-}
-
-#legend li {
-  list-style-type: none;
-  position: relative;
-  padding-left: 13px;
-  margin-bottom: 5px;
-  font-family: sans-serif;
-  font-weight: 400;
-  font-size: 12px;
-}
-
-#legend li::before {
-  content: "";
-  width: 11px;
-  height: 11px;
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 2px;
-}
-
-#legend li:first-child::before {
-  background-color: #3d348b;
-}
-
-#legend li:last-child::before {
-  background-color: #f35b04;
-}
-
-.dot {
-  border: 1px solid black;
+  border: 2px solid blue;
 }
 
 #tooltip {

@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://skillicons.dev/icons?i=d3,js,html,css" /> <br/>
-  <a href="https://github.com/mateus-sartorio/scatterplot-graph"><kbd>🔵 GitHub</kbd></a>
+  <a href="https://github.com/mateus-sartorio/heat-map-with-d3"><kbd>🔵 GitHub</kbd></a>
 </p>
 
 # FreeCodeCamp Heat Map Challenge
